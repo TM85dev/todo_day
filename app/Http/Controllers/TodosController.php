@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class TodosController extends Controller
 {
-    public function index() {
-
-    }
+    public function index() {}
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3'
@@ -32,6 +30,7 @@ class TodosController extends Controller
         $msg = 'Zadanie zostało utworzone';
         return response(compact('msg'));
     }
+    public function show() {}
     public function update($id, Request $request) {
         $validator = Validator::make($request->all(), [
             'is_completed' => 'required|boolean',
@@ -51,7 +50,11 @@ class TodosController extends Controller
         $msg = 'Zadanie zostało zaktualizowane';
         return response(compact('msg'));
     }
-    public function destroy() {
+    public function destroy($id) {
+        $todo = Todo::find($id);
+        $todo->delete();
 
+        $msg = 'Zadanie zostało usunięte';
+        return response(compact('msg'));
     }
 }

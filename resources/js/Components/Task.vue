@@ -1,11 +1,11 @@
 <template>
     <form class="row" method="POST" action="/todos/">
-        <div class="col-md-6">
+        <div class="col-6">
             <input class="form-check-input" type="checkbox" v-model="more.is_completed" :checked="more.is_completed" name="is_completed" @change="toggleTask" :disabled="more.isLoading">
             {{ task.name }}
         </div>
-        <div class="col-md-6">
-            <button class="btn btn-sm btn-danger d-block ms-auto me-0">Usuń</button>
+        <div class="col-6">
+            <button @click="deleteTask" class="btn btn-sm btn-danger d-block ms-auto me-0" :disabled="more.isLoading">Usuń</button>
         </div>
     </form>
 </template>
@@ -31,18 +31,15 @@ const more = reactive({
 const toggleTask = () => {
     more.isLoading = true
     axios.patch(`/todos/${task.id}`, { is_completed: more.is_completed }).then(res => {
-        more.color = 'success'
-        more.info = res.data.msg
-        Inertia.reload()
+        Inertia.reload({ only: ['todos'] })
     }).catch(err => {
-        more.color = 'danger'
-        if(err.response) {
-            more.info = ''
-            const message = JSON.parse(err.response.data.message)
-            Object.values(message.errors).forEach(error => more.info += `${error}<br>`)
-        } else {
-            more.info = 'Nie udało się utworzyć zadania'
-        }
+    }).finally(() => more.isLoading = false)
+}
+const deleteTask = () => {
+    more.isLoading = true
+    axios.delete(`/todos/${task.id}`).then(res => {
+        Inertia.reload({ only: ['todos'] })
+    }).catch(err => {
     }).finally(() => more.isLoading = false)
 }
 </script>
