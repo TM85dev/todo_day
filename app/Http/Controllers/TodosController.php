@@ -17,11 +17,6 @@ class TodosController extends Controller
             $errors = $validator->errors();
             abort(400, json_encode(compact('errors')));
         }
-        $todos = Todo::all();
-        if(count($todos) > 20) {
-            $errors = ['limit' => ['Maksymalna ilość zadań przekroczona']];
-            abort(400, json_encode(compact('errors')));
-        }
         
         $todo = Todo::create([
             'name' => $request->name
