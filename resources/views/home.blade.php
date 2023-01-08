@@ -71,7 +71,6 @@
                                                         <div class="alert alert-danger">{{ session("errors_$todo->id")->first('is_completed') }}</div>
                                                     @endif
                                                 </div>
-
                                             </form>
                                         </label>
                                         @endforeach

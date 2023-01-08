@@ -6,7 +6,7 @@ use App\Models\Todo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class TodoController extends Controller
+class TodosController extends Controller
 {
     public function index() {
 
@@ -16,26 +16,30 @@ class TodoController extends Controller
             'name' => 'required|string|min:3'
         ]);
         if($validator->fails()) {
-            return back()->withErrors($validator->errors());
+            $errors = $validator->errors();
+            abort(400, json_encode(compact('errors')));
+        }
+        $todos = Todo::all();
+        if(count($todos) > 20) {
+            $errors = ['limit' => ['Maksymalna ilość zadań przekroczona']];
+            abort(400, json_encode(compact('errors')));
         }
         
         $todo = Todo::create([
             'name' => $request->name
         ]);
 
-        return back()->with('msg', 'Zadanie zostało utworzone');
-    }
-    public function show($id) {
-        $todo = Todo::find($id);
+        $msg = 'Zadanie zostało utworzone';
+        return response(compact('msg'));
     }
     public function update($id, Request $request) {
-        dd($request->all());
         $validator = Validator::make($request->all(), [
             'is_completed' => 'required|boolean',
             'name' => 'string|min:3'
         ]);
         if($validator->fails()) {
-            return back()->with("errors_$id", $validator->errors());
+            $errors = $validator->errors();
+            abort(400, json_encode(compact('errors')));
         }
         $todo = Todo::find($id);
         $list = ['is_completed', 'name'];
@@ -44,7 +48,8 @@ class TodoController extends Controller
         }
         $todo->save();
 
-        return back()->with("msg_$id", 'Zaktualizowano zadanie');
+        $msg = 'Zadanie zostało zaktualizowane';
+        return response(compact('msg'));
     }
     public function destroy() {
 
