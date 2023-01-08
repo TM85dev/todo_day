@@ -24,8 +24,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $todos = Todo::all();
+        $todos_completed = Todo::where('is_completed', true)->get();
+        $todos_progress = Todo::where('is_completed', false)->get();
         // return view('home');
-        return view('home', compact('todos'));
+        return view('home', compact('todos_completed', 'todos_progress'));
     }
 }

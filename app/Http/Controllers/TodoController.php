@@ -23,16 +23,28 @@ class TodoController extends Controller
             'name' => $request->name
         ]);
 
-        return response([
-            'msg' => 'Utworzono nowe zadanie',
-            'todo' => $todo
-        ]);
+        return back()->with('msg', 'Zadanie zostało utworzone');
     }
     public function show($id) {
         $todo = Todo::find($id);
     }
-    public function update() {
+    public function update($id, Request $request) {
+        dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'is_completed' => 'required|boolean',
+            'name' => 'string|min:3'
+        ]);
+        if($validator->fails()) {
+            return back()->with("errors_$id", $validator->errors());
+        }
+        $todo = Todo::find($id);
+        $list = ['is_completed', 'name'];
+        foreach($list as $name) {
+            if(isset($request->$name)) $todo->$name = $request->$name;
+        }
+        $todo->save();
 
+        return back()->with("msg_$id", 'Zaktualizowano zadanie');
     }
     public function destroy() {
 
