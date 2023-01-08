@@ -58,7 +58,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <div class="col-md-6">
-                                                    <input class="form-check-input" type="checkbox" value="{{ $todo->is_completed }}" name="is_completed" checked="{{ $todo->is_completed }}">
+                                                    <input class="form-check-input" type="checkbox" value="{{ $todo->is_completed }}" name="is_completed">
                                                     {{ $todo->name }}
                                                 </div>
                                                 <div class="col-md-6">
@@ -84,8 +84,25 @@
                                 <ul class="list-group">
                                     @foreach ($todos_completed as $todo)
                                     <label class="list-group-item"> 
-                                        <input class="form-check-input me-1" type="checkbox" checked="{{ $todo->is_completed }}">
-                                        {{ $todo->name }}
+                                        <form class="row" method="POST" action="/todos/{{ $todo->id }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <div class="col-md-6">
+                                                <input class="form-check-input" type="checkbox" value="{{ $todo->is_completed }}" name="is_completed" checked>
+                                                {{ $todo->name }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button type="submit" class="btn btn-sm btn-primary">Zapisz</button>
+                                            </div>
+                                            <div class="col-md-12">
+                                                @if(session("msg_$todo->id"))
+                                                    <div class="alert alert-success">{{ session("msg_$todo->id") }}</div>
+                                                @elseif(session("errors_$todo->id"))
+                                                    <div class="alert alert-danger">{{ session("errors_$todo->id")->first('is_completed') }}</div>
+                                                @endif
+                                            </div>
+
+                                        </form>
                                     </label>
                                     @endforeach
                                 </ul>
